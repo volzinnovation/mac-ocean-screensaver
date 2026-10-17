@@ -1,100 +1,88 @@
-# web-ocean
+# Ocean for macOS
 
-A real-time ocean renderer written from scratch on WebGPU, with no engine or rendering library. It draws a sunset sea with simulated waves, whitecaps, sun glitter, and a physically based sky with clouds. You fly around it with a free camera.
+A Mac screensaver port of [Noniv/web-ocean](https://github.com/Noniv/web-ocean). It preserves the original ocean simulation, foam, atmosphere, reflections, and post-processing, translated to native Metal inside a `ScreenSaverView`. The sky is cloudless. No browser or WebKit process runs in either target.
 
-![Looking toward the sun from 2.4 m above the water](docs/front.jpg)
+The camera faces the **Sun during the day and the Moon after sunset**. The current date, time, latitude and longitude determine their actual elevation. The Moon's visible phase, illuminated limb, stars and Milky Way follow the same astronomical frame. There are no controls, key bindings, instructions or performance overlays in the screensaver.
 
-| 75 degrees off the sun, 2.4 m up | Looking toward the sun from 30 m up |
-|---|---|
-| ![](docs/side.jpg) | ![](docs/high.jpg) |
+## Download and install
 
-## Run it
+**[Download Ocean.saver.zip](https://github.com/volzinnovation/mac-ocean-screensaver/releases/latest/download/Ocean.saver.zip)** · [All releases](https://github.com/volzinnovation/mac-ocean-screensaver/releases)
 
-You need a recent Chrome with WebGPU and a reasonably capable GPU. On a laptop, force Chrome onto the dedicated GPU in the Windows graphics settings, or it will fall back to the integrated one.
+Requires **macOS 26 or later** and a Metal-capable GPU. The release contains both Apple Silicon and Intel binaries. Rendering has been verified on Apple Silicon; Intel runtime testing still requires an Intel Mac.
 
-Open `ocean.html` directly in the browser. `ocean.min.html` is the same page minified (61 KB instead of 102 KB). Both are self-contained and work from `file://`.
+1. Download and unzip `Ocean.saver.zip`.
+2. Open `Ocean.saver` and follow the macOS installation prompt. Select **Ocean** in System Settings' screen saver settings.
+3. Open Ocean's **Options** to enter latitude, longitude and rendering quality, then **Save**. North/east coordinates are positive; south/west are negative.
+4. To use your Mac's location, choose **Use Current Location…**. In the companion settings window, click **Use Current Location**, grant the macOS location permission, then **Save**.
 
-To run from source:
+The companion settings app is embedded in `Ocean.saver`; no separate download is needed. Until a location is configured, Ocean uses a representative city for the system time zone, clearly labelled as an approximation in settings.
 
+The release is **ad-hoc signed and not notarized**. macOS may block a downloaded copy because its developer cannot be verified. If you trust this download, follow Apple's [instructions for opening unnotarized software](https://support.apple.com/102445): after attempting to open it, check **System Settings → Privacy & Security** for **Open Anyway**. Availability depends on macOS and your organization's security policy. Developer ID signing and notarization are not included in this release.
+
+Balanced quality caps the longest rendered edge at 1920 pixels and submits 30 frames per second. Efficient and Detailed use 1280 and 2560 pixels respectively. Preview tiles use at most 1280 pixels. Animation and GPU resources stop when the screensaver stops.
+
+## Build from source
+
+Building requires macOS 26+, Xcode command-line tools with the macOS 26 SDK, the Xcode Metal Toolchain, and Python 3. No third-party packages or server are needed for a normal build.
+
+```sh
+git clone https://github.com/volzinnovation/mac-ocean-screensaver.git
+cd mac-ocean-screensaver
+make build
 ```
-npm install
-npm start        # serves http://localhost:8080/
+
+This creates:
+
+- `build/Ocean.saver` — the self-contained screensaver, including its settings app.
+- `build/Ocean.saver.zip` — the release archive.
+- `build/Ocean Settings.app` — a standalone windowed preview and settings app.
+
+Open `build/Ocean.saver` to install a local build. The standalone settings app opens location settings on its first launch. Building does not install or select the screensaver.
+
+Both architectures are built by default. To build just one:
+
+```sh
+ARCHS=arm64 ./scripts/build.sh
+# or ARCHS=x86_64 ./scripts/build.sh
 ```
 
-After editing anything under `js/`, run `npm run build` to regenerate both bundles. The minified build strips WGSL comments and whitespace and minifies the JavaScript with esbuild.
+## Time and location
 
-## Controls
+Solar position uses NOAA/Meeus equations, evaluated from the absolute UTC instant. It updates every ten seconds and accounts for date, seasons, longitude and latitude without depending on daylight-saving offsets. At standard sunset (Sun's geometric centre below −0.833°), the camera turns toward the Moon's actual azimuth. A Moon below the horizon stays below it; Ocean never raises the Moon to make it visible.
 
-| Input | Action |
-|---|---|
-| Click the canvas | Capture the mouse (Esc releases it). Holding the right mouse button also works. |
-| Mouse | Look around |
-| W A S D | Move |
-| Space or E / Q or C | Up / down |
-| Shift | 5x speed |
-| Mouse wheel | Change base speed |
-| H | Settings panel: wind, swell, choppiness, turbidity, foam, sun, haze, clouds, exposure, bloom |
+The lunar model includes all 120 Meeus longitude/range/latitude periodic terms, WGS84 observer parallax, the physical angular radius and Sun–Moon–observer illumination geometry. The shader lights a sphere from the actual Moon-to-Sun direction, giving the correct phase and rotated bright limb from either hemisphere. Lunar reflections follow its elevation and illumination. Positions are checked against NASA/JPL DE441 references; the supported date range is 1800–2200.
 
-The camera keeps itself above the displaced water surface, so waves never pass through it.
+The stars and Milky Way come from NASA SVS's measured **Deep Star Maps 2020** atlas, with Hipparcos, Tycho and Gaia sources. Local sidereal time, precession and nutation rotate the J2000 atlas into the user's local horizon. This shows the sky actually lying in the Moon's direction. Stellar visibility fades with twilight, horizon extinction and moonlight; it assumes clear, dark skies and does not model local light pollution. Automatic night exposure keeps the sea, Moon and sky visible. There are no clouds in any mode.
 
-URL parameters are handy for testing. `?w=2560&h=1440` forces the render resolution, `cam=x,y,z,yawDeg,pitchDeg` sets the camera, `fov=deg` sets the field of view, `ui=0` hides the HUD, and any settings key works too, for example `windSpeed=12&swellHs=2&sunElev=8`.
+Location permission is requested only after clicking **Use Current Location** in the companion app. The locked-screen host never requests permission. If permission was previously granted and current location is selected, starting the screensaver launches a hidden, short-lived helper to refresh the location. If Location Services is unavailable, the last saved coordinates remain in use. Manual coordinates remain fixed.
 
-## How it works
+Coordinates stay on this Mac. Native Metal shaders and the star atlas are bundled locally; the renderer makes no network requests. Core Location may use macOS Location Services to obtain a fix.
 
-### Waves
+macOS runs legacy screensavers in a separate sandbox. Native Options save directly to the host's own `Library/Application Support/OceanScreenSaver/settings.json`. The companion saves only to `~/Library/Application Support/OceanScreenSaver/settings.json`. The saver has a system-granted read-only filesystem entitlement and reads the newest valid document from these two locations; local edits win equal timestamps. The companion never accesses Apple's protected container, avoiding extra app-data permission prompts. Writes are atomic with user-only permissions.
 
-The sea is a Tessendorf FFT simulation with six cascades of 256 by 256 samples. The patches range from 1103 m down to 0.26 m, so wavelengths run from about a kilometre to a few millimetres. The smallest cascade produces the sharp sun sparkles near the camera.
+Version 1.2.0 includes the cloudless lunar sky and native Metal renderer. The native renderer replaced the original WebKit wrapper in version 1.1. macOS 26.4 introduced a [reported WKWebView regression inside legacy screensavers](https://developer.apple.com/forums/thread/820860); an ordinary preview app did not reproduce that failure. Native rendering avoids that path entirely. The native Options sheet also works independently of companion-app launching.
 
-The spectrum is a fetch-limited JONSWAP wind sea with Donelan-Banner directional spreading, plus a narrow long-crested swell. Dispersion includes the capillary term, and choppy horizontal displacement sharpens the crests. The inverse FFTs are radix-2 compute shaders working in workgroup memory.
+## Validation
 
-The surface mesh is a CDLOD quadtree with 17 levels. Vertices are 6.25 cm apart near the camera and the mesh reaches 160 km, with continuous vertex morphing between levels.
+```sh
+make test
+./scripts/smoke-test.sh
+```
 
-### Shading
+The deterministic tests cover the NREL reference solar position, JPL lunar positions, NASA phase dates, local/J2000 transforms, seasons, polar locations, date-line and timezone equivalence, preference validation and newest-document selection. CPU parity fixtures compare uniform and CDLOD instance bytes against the original JavaScript. Scene tests check Moon/Sun camera selection, preservation of the actual Sun direction and atlas orientation. Generated-shader hashes verify the native Metal source matches the pinned WGSL input. Native Options validation and save/cancel behavior have a separate isolated GUI regression test.
 
-- Mip-mapped first and second moments of the wave slopes (LEAN mapping) give the right anisotropic roughness at every distance. The sun glitter widens with distance and the far sea settles into a sheen without aliasing. Screen-space slope derivatives add specular anti-aliasing.
-- Sun glitter uses an anisotropic Gaussian slope distribution with Smith masking and the size of the solar disc.
-- The sky reflection comes from an environment cube map rebuilt every frame, with roughness-filtered mips. At grazing angles the reflection direction is tilted to account for which wave facets the viewer can actually see.
-- The water body is turbid blue-green, lit by the whole sky hemisphere. Backlit crests get a subsurface glow, and wind-gust patches modulate the short ripples.
-- Whitecaps start where the total surface Jacobian folds. Foam is stored in two camera-centred world-space maps (128 m and 1 km wide), decays over time, drifts downwind, and breaks into streaks as it ages. A procedural bubble texture gives it its structure.
+The GUI smoke test needs a logged-in Mac with WindowServer access. It loads the compiled `.saver` by its principal class, rejects WebKit linkage and cloud rendering, checks 36 seconds of continuous native Sun/Moon-facing rendering and tiny preview resizing, verifies stop/restart behavior, and writes `build/screensaver-preview.png` from the GPU texture. It does not install the saver, change your settings or request location permission. The actual macOS full-screen host has also been visually verified after the native Metal replacement.
 
-### Sky
+A reproducible sunset preview can be captured without changing saved settings:
 
-The atmosphere follows Hillaire's approach, with transmittance, multiple-scattering, and sky-view lookup tables plus aerosol haze. There are two cloud layers, a broken low cumulus and a fibrous altostratus deck. Each is shaded with self-shadowing toward the sun, lit rims, silver linings when backlit, and direction-dependent multiple scattering.
+```sh
+"build/Ocean Settings.app/Contents/MacOS/OceanSettings" \
+  --snapshot "$PWD/build/sunset.png" \
+  --date 2026-10-17T16:00:00Z --latitude 52.52 --longitude 13.405
+```
 
-Cloud noise octaves are filtered by pixel footprint, and silhouettes are anti-aliased analytically: the screen-space derivative of each layer's edge function sets the width of its opacity edge. Cloud transmittance along the sun direction dims the sunlight that reaches the water, and aerial perspective is applied over the sea.
+## Source and licensing
 
-### Post-processing
+`Sources/ScreenSaver/` contains the native screensaver entry point. `Sources/Settings/` contains the companion host. `Sources/Shared/` contains solar calculations, location/settings persistence, the native Metal renderer, and original CPU state. `Resources/Web/js/` preserves the upstream renderer as editable reference source. `Resources/Metal/` contains generated Metal shaders, compiled by `scripts/compile-metal.sh`. To regenerate after a WGSL change, use `scripts/generate-metal.py` with a Node 20+ runtime and the pinned Naga WASM translator; its `--download-compiler` option fetches and integrity-checks the development tool into `build/tools/`. Normal builds need neither Node nor Naga.
 
-The scene renders in HDR with 4x MSAA. Post-processing adds an 8-level bloom, AgX tone mapping, a slight white balance shift, and dithering.
-
-## Performance
-
-At 2560 by 1440 on an RTX 5070 Ti, the GPU takes about 6 to 8 ms per frame, measured while other programs were also using the GPU. The HUD shows FPS and GPU time when the browser supports `timestamp-query`.
-
-The per-frame code reuses preallocated typed arrays and descriptors, so the garbage collector has almost nothing to do. The only recurring allocations are the objects WebGPU itself requires, such as the swap-chain view and command buffers.
-
-## Known limitations
-
-- Far water is still somewhat darker than the bright horizon sky above it.
-- The water is tuned toward turbid coastal water. The "Water turbidity" slider gives darker, bluer deep water when turned down.
-- The scene is open ocean only. There is no shoreline, surf, or objects in the water.
-- Clouds are two flat layers, not volumetric.
-
-## How it was made
-
-I built this with Claude Code (Opus 5.5). I asked for the most realistic water it could produce, in WebGPU, with a floating camera, and left the architecture and implementation to it. It checked its own work by rendering screenshots in headless Chrome and having separate critic subagents review them, so it was not grading its own output. I gave feedback along the way, mainly on the clouds, which led to replacing the volumetric clouds with the flat layers and later fixing their edge aliasing.
-
-## Repository layout
-
-| Path | Contents |
-|---|---|
-| `index.html` | Page shell, HUD, and settings panel styles |
-| `js/main.js` | Device setup, resources, camera, per-frame loop |
-| `js/wgsl/` | Shaders as JavaScript modules: `sim.js` (waves and foam), `sky.js` (atmosphere and clouds), `ocean.js` (surface and sky pass), `post.js` (bloom and tone mapping), `common.js` (shared structs) |
-| `server.mjs` | Tiny static server for development |
-| `build.mjs` | Builds `ocean.html` and `ocean.min.html` |
-| `docs/` | README images |
-
-## License
-
-MIT. See [LICENSE](LICENSE).
+The original renderer is MIT licensed, copyright © 2026 Maksymilian Dendura. Its license ships with both bundles. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for the pinned upstream revision and calculation references.

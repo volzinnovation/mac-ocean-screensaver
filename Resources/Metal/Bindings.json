@@ -1,0 +1,1068 @@
+{
+  "generator": "naga-wasi-cli@0.1.0",
+  "generatorArchiveSHA512": "314a947be5eed9e45b45ff140a06d7487a06c773fc3c5e2b8ee0f64351289cd15fbd3e7b8987159db6508b4a48940d86c4703e2b85fc43d08ac63a819c55bb10",
+  "sourceSHA256": {
+    "Resources/Web/js/wgsl/common.js": "449a2d3b33df13a543ad60095eb46a7f87ffe749da7696933224d56354a61542",
+    "Resources/Web/js/wgsl/ocean.js": "9b985d6d56db3676bb228e10d8c0c66cfc9eb3acaea740f5f5e9449ddb541534",
+    "Resources/Web/js/wgsl/post.js": "589c79cd8a92b422bb3fdc23a46894dd15cc30c3b361d7e09d645c203427eb19",
+    "Resources/Web/js/wgsl/sim.js": "cb9c6e0e5423ab32c8d9a6da147b6444c133479c7886a0fe25d6de42bd85de99",
+    "Resources/Web/js/wgsl/sky.js": "fae7f068df7432133b5d102213de15360aec6f02111028e5c608f990d355149e"
+  },
+  "notes": "Bindings retain original WGSL indices in separate Metal namespaces. Workgroup arrays are static. Clip space is unchanged.",
+  "shaders": {
+    "SIM_INIT": {
+      "bindings": [
+        {
+          "group": 0,
+          "binding": 0,
+          "name": "S",
+          "addressSpace": "uniform",
+          "type": "Sim",
+          "metalIndex": 0,
+          "metalNamespace": "buffer"
+        },
+        {
+          "group": 0,
+          "binding": 1,
+          "name": "h0",
+          "addressSpace": "storage, read_write",
+          "type": "array<vec4f>",
+          "metalIndex": 1,
+          "metalNamespace": "buffer"
+        }
+      ],
+      "entryPoints": {
+        "kernel": "main_"
+      },
+      "threadsPerThreadgroup": [
+        16,
+        16,
+        1
+      ],
+      "metalSHA256": "bcd5616890b10f8b12112efc70700d11bc5b8d7089effc5eff0f979e2bbb1859"
+    },
+    "SIM_EVOLVE": {
+      "bindings": [
+        {
+          "group": 0,
+          "binding": 0,
+          "name": "S",
+          "addressSpace": "uniform",
+          "type": "Sim",
+          "metalIndex": 0,
+          "metalNamespace": "buffer"
+        },
+        {
+          "group": 0,
+          "binding": 1,
+          "name": "h0",
+          "addressSpace": "storage, read",
+          "type": "array<vec4f>",
+          "metalIndex": 1,
+          "metalNamespace": "buffer"
+        },
+        {
+          "group": 0,
+          "binding": 2,
+          "name": "specA",
+          "addressSpace": "storage, read_write",
+          "type": "array<vec4f>",
+          "metalIndex": 2,
+          "metalNamespace": "buffer"
+        },
+        {
+          "group": 0,
+          "binding": 3,
+          "name": "specB",
+          "addressSpace": "storage, read_write",
+          "type": "array<vec4f>",
+          "metalIndex": 3,
+          "metalNamespace": "buffer"
+        }
+      ],
+      "entryPoints": {
+        "kernel": "main_"
+      },
+      "threadsPerThreadgroup": [
+        16,
+        16,
+        1
+      ],
+      "metalSHA256": "66654d3591019cc19ebed5f0f1a89e912172a6a472307216f359613aedf6989d"
+    },
+    "FFT_ROWS": {
+      "bindings": [
+        {
+          "group": 0,
+          "binding": 0,
+          "name": "inA",
+          "addressSpace": "storage, read",
+          "type": "array<vec4f>",
+          "metalIndex": 0,
+          "metalNamespace": "buffer"
+        },
+        {
+          "group": 0,
+          "binding": 1,
+          "name": "inB",
+          "addressSpace": "storage, read",
+          "type": "array<vec4f>",
+          "metalIndex": 1,
+          "metalNamespace": "buffer"
+        },
+        {
+          "group": 0,
+          "binding": 2,
+          "name": "outA",
+          "addressSpace": "storage, read_write",
+          "type": "array<vec4f>",
+          "metalIndex": 2,
+          "metalNamespace": "buffer"
+        },
+        {
+          "group": 0,
+          "binding": 3,
+          "name": "outB",
+          "addressSpace": "storage, read_write",
+          "type": "array<vec4f>",
+          "metalIndex": 3,
+          "metalNamespace": "buffer"
+        }
+      ],
+      "entryPoints": {
+        "kernel": "main_"
+      },
+      "threadsPerThreadgroup": [
+        128,
+        1,
+        1
+      ],
+      "metalSHA256": "19e9a016cc8eab31faf42d8e8060ab1bd85fa8607e7b5dc35716979f96c5dc7c"
+    },
+    "FFT_COLS": {
+      "bindings": [
+        {
+          "group": 0,
+          "binding": 0,
+          "name": "inA",
+          "addressSpace": "storage, read",
+          "type": "array<vec4f>",
+          "metalIndex": 0,
+          "metalNamespace": "buffer"
+        },
+        {
+          "group": 0,
+          "binding": 1,
+          "name": "inB",
+          "addressSpace": "storage, read",
+          "type": "array<vec4f>",
+          "metalIndex": 1,
+          "metalNamespace": "buffer"
+        },
+        {
+          "group": 0,
+          "binding": 2,
+          "name": "dispOut",
+          "addressSpace": null,
+          "type": "texture_storage_2d_array<rgba16float, write>",
+          "metalIndex": 2,
+          "metalNamespace": "texture"
+        },
+        {
+          "group": 0,
+          "binding": 3,
+          "name": "derivOut",
+          "addressSpace": null,
+          "type": "texture_storage_2d_array<rgba16float, write>",
+          "metalIndex": 3,
+          "metalNamespace": "texture"
+        },
+        {
+          "group": 0,
+          "binding": 4,
+          "name": "momOut",
+          "addressSpace": null,
+          "type": "texture_storage_2d_array<rgba16float, write>",
+          "metalIndex": 4,
+          "metalNamespace": "texture"
+        }
+      ],
+      "entryPoints": {
+        "kernel": "main_"
+      },
+      "threadsPerThreadgroup": [
+        128,
+        1,
+        1
+      ],
+      "metalSHA256": "e87687335b131ec171c79c0dee7bf1a25778c601ef7647da30cfa884e1b5393d"
+    },
+    "SIM_MIPS": {
+      "bindings": [
+        {
+          "group": 0,
+          "binding": 0,
+          "name": "srcA",
+          "addressSpace": null,
+          "type": "texture_2d_array<f32>",
+          "metalIndex": 0,
+          "metalNamespace": "texture"
+        },
+        {
+          "group": 0,
+          "binding": 1,
+          "name": "srcB",
+          "addressSpace": null,
+          "type": "texture_2d_array<f32>",
+          "metalIndex": 1,
+          "metalNamespace": "texture"
+        },
+        {
+          "group": 0,
+          "binding": 2,
+          "name": "srcC",
+          "addressSpace": null,
+          "type": "texture_2d_array<f32>",
+          "metalIndex": 2,
+          "metalNamespace": "texture"
+        },
+        {
+          "group": 0,
+          "binding": 3,
+          "name": "dstA",
+          "addressSpace": null,
+          "type": "texture_storage_2d_array<rgba16float, write>",
+          "metalIndex": 3,
+          "metalNamespace": "texture"
+        },
+        {
+          "group": 0,
+          "binding": 4,
+          "name": "dstB",
+          "addressSpace": null,
+          "type": "texture_storage_2d_array<rgba16float, write>",
+          "metalIndex": 4,
+          "metalNamespace": "texture"
+        },
+        {
+          "group": 0,
+          "binding": 5,
+          "name": "dstC",
+          "addressSpace": null,
+          "type": "texture_storage_2d_array<rgba16float, write>",
+          "metalIndex": 5,
+          "metalNamespace": "texture"
+        }
+      ],
+      "entryPoints": {
+        "kernel": "main_"
+      },
+      "threadsPerThreadgroup": [
+        8,
+        8,
+        1
+      ],
+      "metalSHA256": "f54f5ff51144d3a61eaabbcbad46613b3ca00e6d7afb3bf2d0a6ca5f3e3858ca"
+    },
+    "FOAM_TEX": {
+      "bindings": [
+        {
+          "group": 0,
+          "binding": 0,
+          "name": "dst",
+          "addressSpace": null,
+          "type": "texture_storage_2d<rgba8unorm, write>",
+          "metalIndex": 0,
+          "metalNamespace": "texture"
+        }
+      ],
+      "entryPoints": {
+        "kernel": "main_"
+      },
+      "threadsPerThreadgroup": [
+        8,
+        8,
+        1
+      ],
+      "metalSHA256": "83cc66ca4801aafb122f8205f064f8f33d931c00465b438f9144fc0436e5fcca"
+    },
+    "RGBA8_MIPS": {
+      "bindings": [
+        {
+          "group": 0,
+          "binding": 0,
+          "name": "src",
+          "addressSpace": null,
+          "type": "texture_2d<f32>",
+          "metalIndex": 0,
+          "metalNamespace": "texture"
+        },
+        {
+          "group": 0,
+          "binding": 1,
+          "name": "dst",
+          "addressSpace": null,
+          "type": "texture_storage_2d<rgba8unorm, write>",
+          "metalIndex": 1,
+          "metalNamespace": "texture"
+        }
+      ],
+      "entryPoints": {
+        "kernel": "main_"
+      },
+      "threadsPerThreadgroup": [
+        8,
+        8,
+        1
+      ],
+      "metalSHA256": "2bd80d57a3c28ace9b07860514e13b6fd4931b745bbe3ea2d69e28d636380fb0"
+    },
+    "FOAM_UPDATE": {
+      "bindings": [
+        {
+          "group": 0,
+          "binding": 0,
+          "name": "U",
+          "addressSpace": "uniform",
+          "type": "FoamU",
+          "metalIndex": 0,
+          "metalNamespace": "buffer"
+        },
+        {
+          "group": 0,
+          "binding": 1,
+          "name": "prevTex",
+          "addressSpace": null,
+          "type": "texture_2d_array<f32>",
+          "metalIndex": 1,
+          "metalNamespace": "texture"
+        },
+        {
+          "group": 0,
+          "binding": 2,
+          "name": "dst",
+          "addressSpace": null,
+          "type": "texture_storage_2d_array<rgba16float, write>",
+          "metalIndex": 2,
+          "metalNamespace": "texture"
+        },
+        {
+          "group": 0,
+          "binding": 3,
+          "name": "dispTex",
+          "addressSpace": null,
+          "type": "texture_2d_array<f32>",
+          "metalIndex": 3,
+          "metalNamespace": "texture"
+        },
+        {
+          "group": 0,
+          "binding": 4,
+          "name": "derivTex",
+          "addressSpace": null,
+          "type": "texture_2d_array<f32>",
+          "metalIndex": 4,
+          "metalNamespace": "texture"
+        },
+        {
+          "group": 0,
+          "binding": 5,
+          "name": "samp",
+          "addressSpace": null,
+          "type": "sampler",
+          "metalIndex": 5,
+          "metalNamespace": "sampler"
+        },
+        {
+          "group": 0,
+          "binding": 6,
+          "name": "sampPrev",
+          "addressSpace": null,
+          "type": "sampler",
+          "metalIndex": 6,
+          "metalNamespace": "sampler"
+        }
+      ],
+      "entryPoints": {
+        "kernel": "main_"
+      },
+      "threadsPerThreadgroup": [
+        8,
+        8,
+        1
+      ],
+      "metalSHA256": "be02c20529a822ce9cc89fbdee20d6095af086ff2d2b2ba79e7434aa7e7e8aa5"
+    },
+    "ARRAY16_MIPS": {
+      "bindings": [
+        {
+          "group": 0,
+          "binding": 0,
+          "name": "src",
+          "addressSpace": null,
+          "type": "texture_2d_array<f32>",
+          "metalIndex": 0,
+          "metalNamespace": "texture"
+        },
+        {
+          "group": 0,
+          "binding": 1,
+          "name": "dst",
+          "addressSpace": null,
+          "type": "texture_storage_2d_array<rgba16float, write>",
+          "metalIndex": 1,
+          "metalNamespace": "texture"
+        }
+      ],
+      "entryPoints": {
+        "kernel": "main_"
+      },
+      "threadsPerThreadgroup": [
+        8,
+        8,
+        1
+      ],
+      "metalSHA256": "e74174a1df9ddc859bc77166bdd884627e894af55884fa507c04f54d266887e1"
+    },
+    "TRANS_LUT": {
+      "bindings": [
+        {
+          "group": 0,
+          "binding": 0,
+          "name": "A",
+          "addressSpace": "uniform",
+          "type": "AtmoP",
+          "metalIndex": 0,
+          "metalNamespace": "buffer"
+        },
+        {
+          "group": 0,
+          "binding": 1,
+          "name": "dst",
+          "addressSpace": null,
+          "type": "texture_storage_2d<rgba16float, write>",
+          "metalIndex": 1,
+          "metalNamespace": "texture"
+        }
+      ],
+      "entryPoints": {
+        "kernel": "main_"
+      },
+      "threadsPerThreadgroup": [
+        8,
+        8,
+        1
+      ],
+      "metalSHA256": "01c98821ae25ee6a1a6ce81708cbd563524807dcbc81a4bdf70ca4a0640f1a68"
+    },
+    "MS_LUT": {
+      "bindings": [
+        {
+          "group": 0,
+          "binding": 0,
+          "name": "A",
+          "addressSpace": "uniform",
+          "type": "AtmoP",
+          "metalIndex": 0,
+          "metalNamespace": "buffer"
+        },
+        {
+          "group": 0,
+          "binding": 1,
+          "name": "transLUT",
+          "addressSpace": null,
+          "type": "texture_2d<f32>",
+          "metalIndex": 1,
+          "metalNamespace": "texture"
+        },
+        {
+          "group": 0,
+          "binding": 2,
+          "name": "sampC",
+          "addressSpace": null,
+          "type": "sampler",
+          "metalIndex": 2,
+          "metalNamespace": "sampler"
+        },
+        {
+          "group": 0,
+          "binding": 3,
+          "name": "dst",
+          "addressSpace": null,
+          "type": "texture_storage_2d<rgba16float, write>",
+          "metalIndex": 3,
+          "metalNamespace": "texture"
+        }
+      ],
+      "entryPoints": {
+        "kernel": "main_"
+      },
+      "threadsPerThreadgroup": [
+        8,
+        8,
+        1
+      ],
+      "metalSHA256": "8760e5d2fd596e6556f67d2697794e5a59ea411317e809738e516f4668d7f4cf"
+    },
+    "SKYVIEW_LUT": {
+      "bindings": [
+        {
+          "group": 0,
+          "binding": 0,
+          "name": "F",
+          "addressSpace": "uniform",
+          "type": "Frame",
+          "metalIndex": 0,
+          "metalNamespace": "buffer"
+        },
+        {
+          "group": 0,
+          "binding": 1,
+          "name": "transLUT",
+          "addressSpace": null,
+          "type": "texture_2d<f32>",
+          "metalIndex": 1,
+          "metalNamespace": "texture"
+        },
+        {
+          "group": 0,
+          "binding": 2,
+          "name": "msLUT",
+          "addressSpace": null,
+          "type": "texture_2d<f32>",
+          "metalIndex": 2,
+          "metalNamespace": "texture"
+        },
+        {
+          "group": 0,
+          "binding": 3,
+          "name": "sampC",
+          "addressSpace": null,
+          "type": "sampler",
+          "metalIndex": 3,
+          "metalNamespace": "sampler"
+        },
+        {
+          "group": 0,
+          "binding": 4,
+          "name": "dst",
+          "addressSpace": null,
+          "type": "texture_storage_2d<rgba16float, write>",
+          "metalIndex": 4,
+          "metalNamespace": "texture"
+        }
+      ],
+      "entryPoints": {
+        "kernel": "main_"
+      },
+      "threadsPerThreadgroup": [
+        8,
+        8,
+        1
+      ],
+      "metalSHA256": "2b2afcdc54709721401ef13d353fadff89608d795420829520b1cf3af717be17"
+    },
+    "ENV_CUBE": {
+      "bindings": [
+        {
+          "group": 0,
+          "binding": 0,
+          "name": "F",
+          "addressSpace": "uniform",
+          "type": "Frame",
+          "metalIndex": 0,
+          "metalNamespace": "buffer"
+        },
+        {
+          "group": 0,
+          "binding": 1,
+          "name": "transLUT",
+          "addressSpace": null,
+          "type": "texture_2d<f32>",
+          "metalIndex": 1,
+          "metalNamespace": "texture"
+        },
+        {
+          "group": 0,
+          "binding": 2,
+          "name": "skyLUT",
+          "addressSpace": null,
+          "type": "texture_2d<f32>",
+          "metalIndex": 2,
+          "metalNamespace": "texture"
+        },
+        {
+          "group": 0,
+          "binding": 3,
+          "name": "sampC",
+          "addressSpace": null,
+          "type": "sampler",
+          "metalIndex": 3,
+          "metalNamespace": "sampler"
+        },
+        {
+          "group": 0,
+          "binding": 4,
+          "name": "dst",
+          "addressSpace": null,
+          "type": "texture_storage_2d_array<rgba16float, write>",
+          "metalIndex": 4,
+          "metalNamespace": "texture"
+        },
+        {
+          "group": 0,
+          "binding": 12,
+          "name": "C",
+          "addressSpace": "uniform",
+          "type": "Celestial",
+          "metalIndex": 12,
+          "metalNamespace": "buffer"
+        },
+        {
+          "group": 0,
+          "binding": 13,
+          "name": "celestialAtlas",
+          "addressSpace": null,
+          "type": "texture_2d<f32>",
+          "metalIndex": 13,
+          "metalNamespace": "texture"
+        },
+        {
+          "group": 0,
+          "binding": 14,
+          "name": "celestialSampler",
+          "addressSpace": null,
+          "type": "sampler",
+          "metalIndex": 14,
+          "metalNamespace": "sampler"
+        }
+      ],
+      "entryPoints": {
+        "kernel": "main_"
+      },
+      "threadsPerThreadgroup": [
+        8,
+        8,
+        1
+      ],
+      "metalSHA256": "13b76c912951be9f8eb279479c0f019588f6a625cbef2c304de357d17d233240"
+    },
+    "CUBE_MIPS": {
+      "bindings": [
+        {
+          "group": 0,
+          "binding": 0,
+          "name": "src",
+          "addressSpace": null,
+          "type": "texture_2d_array<f32>",
+          "metalIndex": 0,
+          "metalNamespace": "texture"
+        },
+        {
+          "group": 0,
+          "binding": 1,
+          "name": "dst",
+          "addressSpace": null,
+          "type": "texture_storage_2d_array<rgba16float, write>",
+          "metalIndex": 1,
+          "metalNamespace": "texture"
+        }
+      ],
+      "entryPoints": {
+        "kernel": "main_"
+      },
+      "threadsPerThreadgroup": [
+        8,
+        8,
+        1
+      ],
+      "metalSHA256": "674ea262a3daad86ed262f7d9fb13e20b8c14f7c3a167fd5647631211a5109ea"
+    },
+    "SUN_VIS": {
+      "bindings": [
+        {
+          "group": 0,
+          "binding": 4,
+          "name": "sunVis",
+          "addressSpace": "storage, read_write",
+          "type": "array<f32, 4>",
+          "metalIndex": 4,
+          "metalNamespace": "buffer"
+        }
+      ],
+      "entryPoints": {
+        "kernel": "main_"
+      },
+      "threadsPerThreadgroup": [
+        8,
+        1,
+        1
+      ],
+      "metalSHA256": "06a670d9382cfbdfa3d6c64bc3f8ebbc49699f61360565e2a9742e04f62d94a0"
+    },
+    "HEIGHT_PROBE": {
+      "bindings": [
+        {
+          "group": 0,
+          "binding": 0,
+          "name": "F",
+          "addressSpace": "uniform",
+          "type": "Frame",
+          "metalIndex": 0,
+          "metalNamespace": "buffer"
+        },
+        {
+          "group": 0,
+          "binding": 1,
+          "name": "dispTex",
+          "addressSpace": null,
+          "type": "texture_2d_array<f32>",
+          "metalIndex": 1,
+          "metalNamespace": "texture"
+        },
+        {
+          "group": 0,
+          "binding": 2,
+          "name": "samp",
+          "addressSpace": null,
+          "type": "sampler",
+          "metalIndex": 2,
+          "metalNamespace": "sampler"
+        },
+        {
+          "group": 0,
+          "binding": 3,
+          "name": "outH",
+          "addressSpace": "storage, read_write",
+          "type": "array<f32, 4>",
+          "metalIndex": 3,
+          "metalNamespace": "buffer"
+        }
+      ],
+      "entryPoints": {
+        "kernel": "main_"
+      },
+      "threadsPerThreadgroup": [
+        1,
+        1,
+        1
+      ],
+      "metalSHA256": "d10f98be382b8bb0673569ee7a0bfc35b4df46663709987ab156ea61822cf294"
+    },
+    "OCEAN": {
+      "bindings": [
+        {
+          "group": 0,
+          "binding": 0,
+          "name": "F",
+          "addressSpace": "uniform",
+          "type": "Frame",
+          "metalIndex": 0,
+          "metalNamespace": "buffer"
+        },
+        {
+          "group": 0,
+          "binding": 1,
+          "name": "transLUT",
+          "addressSpace": null,
+          "type": "texture_2d<f32>",
+          "metalIndex": 1,
+          "metalNamespace": "texture"
+        },
+        {
+          "group": 0,
+          "binding": 2,
+          "name": "skyLUT",
+          "addressSpace": null,
+          "type": "texture_2d<f32>",
+          "metalIndex": 2,
+          "metalNamespace": "texture"
+        },
+        {
+          "group": 0,
+          "binding": 3,
+          "name": "sampC",
+          "addressSpace": null,
+          "type": "sampler",
+          "metalIndex": 3,
+          "metalNamespace": "sampler"
+        },
+        {
+          "group": 0,
+          "binding": 4,
+          "name": "dispTex",
+          "addressSpace": null,
+          "type": "texture_2d_array<f32>",
+          "metalIndex": 4,
+          "metalNamespace": "texture"
+        },
+        {
+          "group": 0,
+          "binding": 5,
+          "name": "derivTex",
+          "addressSpace": null,
+          "type": "texture_2d_array<f32>",
+          "metalIndex": 5,
+          "metalNamespace": "texture"
+        },
+        {
+          "group": 0,
+          "binding": 6,
+          "name": "momTex",
+          "addressSpace": null,
+          "type": "texture_2d_array<f32>",
+          "metalIndex": 6,
+          "metalNamespace": "texture"
+        },
+        {
+          "group": 0,
+          "binding": 7,
+          "name": "foamTex",
+          "addressSpace": null,
+          "type": "texture_2d<f32>",
+          "metalIndex": 7,
+          "metalNamespace": "texture"
+        },
+        {
+          "group": 0,
+          "binding": 8,
+          "name": "envCube",
+          "addressSpace": null,
+          "type": "texture_cube<f32>",
+          "metalIndex": 8,
+          "metalNamespace": "texture"
+        },
+        {
+          "group": 0,
+          "binding": 9,
+          "name": "sampR",
+          "addressSpace": null,
+          "type": "sampler",
+          "metalIndex": 9,
+          "metalNamespace": "sampler"
+        },
+        {
+          "group": 0,
+          "binding": 10,
+          "name": "foamWorld",
+          "addressSpace": null,
+          "type": "texture_2d_array<f32>",
+          "metalIndex": 10,
+          "metalNamespace": "texture"
+        },
+        {
+          "group": 0,
+          "binding": 11,
+          "name": "sunVis",
+          "addressSpace": "storage, read",
+          "type": "array<f32, 4>",
+          "metalIndex": 11,
+          "metalNamespace": "buffer"
+        },
+        {
+          "group": 0,
+          "binding": 12,
+          "name": "C",
+          "addressSpace": "uniform",
+          "type": "Celestial",
+          "metalIndex": 12,
+          "metalNamespace": "buffer"
+        }
+      ],
+      "entryPoints": {
+        "vertex": "vs",
+        "fragment": "fs"
+      },
+      "metalSHA256": "09024cd88596c49d2db7be8218fff5997ef23c33cd26dc16211c077fc875bd8c"
+    },
+    "SKY_BG": {
+      "bindings": [
+        {
+          "group": 0,
+          "binding": 0,
+          "name": "F",
+          "addressSpace": "uniform",
+          "type": "Frame",
+          "metalIndex": 0,
+          "metalNamespace": "buffer"
+        },
+        {
+          "group": 0,
+          "binding": 1,
+          "name": "transLUT",
+          "addressSpace": null,
+          "type": "texture_2d<f32>",
+          "metalIndex": 1,
+          "metalNamespace": "texture"
+        },
+        {
+          "group": 0,
+          "binding": 2,
+          "name": "skyLUT",
+          "addressSpace": null,
+          "type": "texture_2d<f32>",
+          "metalIndex": 2,
+          "metalNamespace": "texture"
+        },
+        {
+          "group": 0,
+          "binding": 3,
+          "name": "sampC",
+          "addressSpace": null,
+          "type": "sampler",
+          "metalIndex": 3,
+          "metalNamespace": "sampler"
+        },
+        {
+          "group": 0,
+          "binding": 12,
+          "name": "C",
+          "addressSpace": "uniform",
+          "type": "Celestial",
+          "metalIndex": 12,
+          "metalNamespace": "buffer"
+        },
+        {
+          "group": 0,
+          "binding": 13,
+          "name": "celestialAtlas",
+          "addressSpace": null,
+          "type": "texture_2d<f32>",
+          "metalIndex": 13,
+          "metalNamespace": "texture"
+        },
+        {
+          "group": 0,
+          "binding": 14,
+          "name": "celestialSampler",
+          "addressSpace": null,
+          "type": "sampler",
+          "metalIndex": 14,
+          "metalNamespace": "sampler"
+        }
+      ],
+      "entryPoints": {
+        "vertex": "vs",
+        "fragment": "fs"
+      },
+      "metalSHA256": "ac63e0d5501a3772ffc0ee3865e817a2b4c8a72605cf3c189cb41b0ea11622cd"
+    },
+    "BLOOM_DOWN": {
+      "bindings": [
+        {
+          "group": 0,
+          "binding": 0,
+          "name": "src",
+          "addressSpace": null,
+          "type": "texture_2d<f32>",
+          "metalIndex": 0,
+          "metalNamespace": "texture"
+        },
+        {
+          "group": 0,
+          "binding": 1,
+          "name": "samp",
+          "addressSpace": null,
+          "type": "sampler",
+          "metalIndex": 1,
+          "metalNamespace": "sampler"
+        },
+        {
+          "group": 0,
+          "binding": 2,
+          "name": "U",
+          "addressSpace": "uniform",
+          "type": "P",
+          "metalIndex": 2,
+          "metalNamespace": "buffer"
+        }
+      ],
+      "entryPoints": {
+        "vertex": "vs",
+        "fragment": "fs"
+      },
+      "metalSHA256": "d5e4214f01c764d3b1173227570be8230a8c7189109001223aa83a7875c382d8"
+    },
+    "BLOOM_UP": {
+      "bindings": [
+        {
+          "group": 0,
+          "binding": 0,
+          "name": "src",
+          "addressSpace": null,
+          "type": "texture_2d<f32>",
+          "metalIndex": 0,
+          "metalNamespace": "texture"
+        },
+        {
+          "group": 0,
+          "binding": 1,
+          "name": "samp",
+          "addressSpace": null,
+          "type": "sampler",
+          "metalIndex": 1,
+          "metalNamespace": "sampler"
+        },
+        {
+          "group": 0,
+          "binding": 2,
+          "name": "U",
+          "addressSpace": "uniform",
+          "type": "P",
+          "metalIndex": 2,
+          "metalNamespace": "buffer"
+        }
+      ],
+      "entryPoints": {
+        "vertex": "vs",
+        "fragment": "fs"
+      },
+      "metalSHA256": "948c2900ef1af1be9f78cbeb3d14218d1cb8941fb4555b2cae87a3235fdb600a"
+    },
+    "COMPOSITE": {
+      "bindings": [
+        {
+          "group": 0,
+          "binding": 0,
+          "name": "hdr",
+          "addressSpace": null,
+          "type": "texture_2d<f32>",
+          "metalIndex": 0,
+          "metalNamespace": "texture"
+        },
+        {
+          "group": 0,
+          "binding": 1,
+          "name": "bloom",
+          "addressSpace": null,
+          "type": "texture_2d<f32>",
+          "metalIndex": 1,
+          "metalNamespace": "texture"
+        },
+        {
+          "group": 0,
+          "binding": 2,
+          "name": "samp",
+          "addressSpace": null,
+          "type": "sampler",
+          "metalIndex": 2,
+          "metalNamespace": "sampler"
+        },
+        {
+          "group": 0,
+          "binding": 3,
+          "name": "U",
+          "addressSpace": "uniform",
+          "type": "P",
+          "metalIndex": 3,
+          "metalNamespace": "buffer"
+        }
+      ],
+      "entryPoints": {
+        "vertex": "vs",
+        "fragment": "fs"
+      },
+      "metalSHA256": "6f5e190fca8bf8b82bb8f59ad46d87e21baff1bcb66fc100a9fd8246efbcd1db"
+    }
+  }
+}

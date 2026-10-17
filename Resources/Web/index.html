@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'none'">
+<title>Ocean</title>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#07131e;color:#e0e8ee;font:14px -apple-system,BlinkMacSystemFont,sans-serif}
+canvas{display:block;width:100%;height:100%;pointer-events:none}
+#err{display:none;position:fixed;inset:0;box-sizing:border-box;padding:12%;place-content:center;white-space:pre-wrap;line-height:1.6;background:#07131e}
+</style>
+</head>
+<body><canvas id="c" aria-label="Ocean with the sun at its current elevation"></canvas><div id="err" role="alert"></div>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
