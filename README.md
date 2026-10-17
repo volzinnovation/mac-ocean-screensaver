@@ -4,6 +4,22 @@ A Mac screensaver port of [Noniv/web-ocean](https://github.com/Noniv/web-ocean).
 
 The camera faces the **Sun during the day and the Moon after sunset**. The current date, time, latitude and longitude determine their actual elevation. The Moon's visible phase, illuminated limb, stars and Milky Way follow the same astronomical frame. There are no controls, key bindings, instructions or performance overlays in the screensaver.
 
+## Views
+
+| Day | Night |
+| --- | --- |
+| ![Day view of the cloudless, sunlit ocean](docs/screenshots/day.png) | ![Night view of the ocean with the Moon and stars](docs/screenshots/night.png) |
+
+| Sunrise | Sunset |
+| --- | --- |
+| ![Sunrise over the cloudless ocean](docs/screenshots/sunrise.png) | ![Sunset over the cloudless ocean](docs/screenshots/sunset.png) |
+
+These screenshots are captured directly from the native Metal renderer using fixed dates and coordinates, without changing saved settings. See [capture details](docs/screenshots/README.md) to reproduce the views.
+
+**Settings** — example coordinates for Berlin (52.52° N, 13.405° E).
+
+![Native Ocean settings showing example Berlin coordinates and rendering quality](docs/screenshots/settings.png)
+
 ## Download and install
 
 **[Download Ocean.saver.zip](https://github.com/volzinnovation/mac-ocean-screensaver/releases/latest/download/Ocean.saver.zip)** · [All releases](https://github.com/volzinnovation/mac-ocean-screensaver/releases)
